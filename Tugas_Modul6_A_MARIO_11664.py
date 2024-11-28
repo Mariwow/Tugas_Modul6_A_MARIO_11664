@@ -6,11 +6,21 @@ from PIL import Image
 
 # Load the pre-trained model
 # Sesuaikan dengan path model Anda (model terbaik yang di dump dalam format .h5)
-model = 'model_mobilenet.h5'
+try:
+    model = 'model_mobilenet.h5'
+    if not hasattr(model, "predict"):
+        raise AttributeError("File yang dimuat bukan model Keras yang valid.")
+    print("Model berhasil dimuat.")
+except Exception as e:
+    st.error(f"Gagal memuat model: {e}")
+    model = None  # Set model to None jika gagal memuat
+
 class_names = ['Matang', 'Mentah']
 
 # Function to preprocess and classify image
 def classify_image(image_path):
+    if model is None:
+        return "Error", "Model belum dimuat dengan benar."
     try:
         # Load and preprocess the image
         input_image = tf.keras.utils.load_img(image_path, target_size=(180, 180))
@@ -45,7 +55,7 @@ def custom_progress_bar(confidence, color1, color2):
     st.sidebar.markdown(progress_html, unsafe_allow_html=True)
 
 # Streamlit UI
-st.title("Prediksi Kematangan Buah Naga - 1664")  # Ganti XXXX dengan 4 digit npm terakhir
+st.title("Prediksi Kematangan Buah Naga - XXXX")  # Ganti XXXX dengan 4 digit npm terakhir
 
 # Upload multiple files in the main page
 uploaded_files = st.file_uploader("Unggah Gambar (Beberapa diperbolehkan)", type=["jpg", "png", "jpeg"], accept_multiple_files=True)
